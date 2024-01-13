@@ -57,10 +57,8 @@ function HomePage(props: any) {
 
   useEffect(() => {
     scrollToDiv();
-    //setIsDownloadSuccess(true);
-    // setDisplayedItems(audioResponse.links.slice(0, itemsPerPage));
     return () => {};
-  }, [colorContex.color]);
+  }, [colorContex.point]);
 
   const handleClose = () => {
     setOpen(false);
@@ -100,17 +98,38 @@ function HomePage(props: any) {
     setSeek(newValue as number);
   };
 
+  function handleOpenVideo() {
+    if (!isTermsAggred) {
+      alert("Please Agree with our Terms & Condition before procedding..");
+      return;
+    }
+    if (videoUrl === "" || !videoUrl.startsWith("https://")) {
+      alert("A Valid Website URL [https://www] is Required!!");
+      return;
+    }
+
+    window.open(videoUrl, "_blank");
+  }
+
   function handleVideoPlay(): any {
-    // if (videoUrl === "" || !videoUrl.startsWith("http://")) {
-    //   alert("A Valid Website URL is Required!!");
-    //   return;
-    // }
+    if (!isTermsAggred) {
+      alert("Please Agree with our Terms & Condition before procedding..");
+      return;
+    }
+    if (videoUrl === "" || !videoUrl.startsWith("https://")) {
+      alert("A Valid Website URL [https://www] is Required!!");
+      return;
+    }
+    setInVideoUrl(videoUrl);
     setPlayVideo(true);
-    // window.open(videoUrl, "_blank");
+    setVideoUrl("");
   }
 
   function scrollToDiv() {
-    scrollRef.current.scrollIntoView();
+    if (colorContex.point !== 0) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+      colorContex.setPoint(0);
+    }
   }
 
   const backdrop = (
@@ -130,8 +149,6 @@ function HomePage(props: any) {
     </React.Fragment>
   );
 
-  
-
   return (
     <div
       ref={scrollRef}
@@ -139,8 +156,9 @@ function HomePage(props: any) {
     >
       {backdrop}
       <FeatureIntro
-        heading="Only screenshot capturer tool you need"
-        desc="Ditch generic keywords and discover powerful, untapped gems with our advanced scraper. Say goodbye to endless brainstorming and hello to targeted content that dominates search engines. No more tedious manual research. Automate your keyword discovery, freeing up your time for crafting content that truly shines."
+        heading="Uncage the Video Universe: Play Anything, Anywhere⚡️"
+        desc="Tired of jumping between platforms to watch videos?  Break free from the shackles of YouTube blocks, frustrating social media embeds, and limited formats! Online Player is your all-in-one video playground, unleashing the full potential of the web! Just drop a URL or upload your file, and watch in glorious playback – YouTube, Facebook, Instagram, even niche social media gems, we've got you covered!"
+        subheading="But wait, there's more!  Go beyond social media with native support for all your favorite video formats: MP4, MP3, M3U8, WebM – you name it, we play it! Claim your freedom to watch ANYTHING, ANYTIME ➡️"
       />
       <div className="flex flex-col items-center border border-gray-400 shadow-lg p-4">
         <TextField
@@ -148,42 +166,34 @@ function HomePage(props: any) {
           value={videoUrl}
           onChange={handleChange}
           id="url-input"
-          label="Enter Website Link To Capture"
+          label="Enter Video URL"
           variant="outlined"
         />
-
-        <div className="flex items-center justify-center mt-4">
-          <Checkbox onChange={(e) => setIsFullScreen(e.target.checked)} />
-          <h3 className="text-sm text-center font-bold">
-            {isFullScreen
-              ? "Capture full-screen screenshot"
-              : "Capture viewport(vh) visible only screenshot"}
-          </h3>
-        </div>
 
         <Button
           onClick={handleVideoPlay}
           sx={{ marginTop: "20px", marginBottom: "10px", width: "200px" }}
           variant="contained"
         >
-          Take Screenshot
+          Play Video
         </Button>
         <Button
-          onClick={handleVideoPlay}
+          onClick={handleOpenVideo}
           sx={{ width: "200px", marginTop: "10px", marginBottom: "15px" }}
           variant="outlined"
         >
-          Visit Website
+          Open Video
         </Button>
         <h3 className="text-xs text-center w-80 m-2">
-          A direct list of result will get triggered if file has only one format
-          else a list of downloadable file will get presented.
+          We provide the data "as is" with no guarantees of accuracy or
+          completeness. Use it at your own risk and comply with relevant laws
+          and regulations.
         </h3>
         <div className="flex items-center justify-center">
           <Checkbox onChange={(e) => handleCheckboxChange(e.target.checked)} />
-          <h3 className="text-xs text-center m-2">
-            By capturing screenshot of 3rd party websites you agree to our terms
-            & conditions for fair usages policy
+          <h3 className="text-xs text-center">
+            You agree to use this tool for legitimate purposes only, respecting
+            user privacy and avoiding misuse of location data.
           </h3>
         </div>
         <Divider color="black" />
@@ -191,12 +201,10 @@ function HomePage(props: any) {
 
       <br />
       <br />
-      {isDownloadSuccess && (
+      {playVideo && (
         <div className="border-2 text-center border-blue-500 shadow-sm p-4 mb-8">
           <div className="flex flex-col items-center md:flex-row font-mono mb-5 justify-center">
-            <h3 className="font-bold text-xl">
-              Screenshot Capturing Successful
-            </h3>
+            <h3 className="font-bold text-xl">Video Started Playng</h3>
             <img
               className="m-2"
               width="30px"
@@ -215,8 +223,6 @@ function HomePage(props: any) {
         </div>
       )}
 
-      <img alt="screenshot-file" className="mt-5 mb-8" src={imageSrc} />
-
       {playVideo && (
         <div className="w-full sm:w-50px lg:w-1/2 mt-10 mb-10">
           <ReactPlayer
@@ -227,12 +233,11 @@ function HomePage(props: any) {
             controls={true}
             pip={true}
             volume={1}
-            url={videoUrl}
+            url={inVideoUrl}
           />
         </div>
       )}
 
-    
       <br />
       <br />
       <br />
